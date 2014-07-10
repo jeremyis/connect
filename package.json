@@ -1,0 +1,12 @@
+{
+  "name": "launch",
+  "version": "0.0.1",
+  "author": {
+    "name": "Jeremy Smith",
+    "email": "jeremy.elliot.smith@gmail.com"
+  },
+  "dependencies": {
+    "minimist": "0.2.x"
+  }
+}
+

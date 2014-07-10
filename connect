@@ -1,0 +1,53 @@
+#!/usr/bin/env coffee
+
+{ spawn } = require 'child_process'
+
+parse = require 'parse-database-url'
+
+commandMySql = (input) ->
+  { driver, user, password, host, database } = input
+  [
+    'mysql',
+    '-h', host,
+    '-u', user,
+    "-p#{password}", # Cannot have a space
+    database
+  ].join ' '
+
+commandMongo = (input) ->
+  throw new Error "Mongo is not yet implemented."
+
+CONSTRUCTORS =
+  'mysql': commandMySql
+  'mongo': commandMongo
+
+constructCommand = (input) ->
+  console.log("DRIVER |#{input.driver}|")
+  # Why do we have to trim?
+  cstr = CONSTRUCTORS[ input.driver?.trim() ]
+  console.log input
+  if not cstr?
+    throw Error "Unknown driver: #{input.driver}"
+  cstr(input)
+
+shspawn = (cmd) ->
+  console.log "shspawn: #{cmd}"
+  proc = spawn 'sh', ['-c', cmd], { stdio: 'inherit' }
+
+run = (input) ->
+  console.log input
+  params = parse input
+
+  cmd = constructCommand(params)
+  shspawn cmd
+
+# Accept password on stdin so they're not saved to bash history.
+process.stdout.write 'URL: '
+process.stdin.setEncoding 'utf8'
+executed = false
+process.stdin.on 'data', (input) ->
+  console.log 'calling run'
+  if not executed
+    executed = true
+    run input
+    process.stdin.end()
