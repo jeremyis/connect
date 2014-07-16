@@ -3,7 +3,6 @@
 { spawn } = require 'child_process'
 
 parse = require 'parse-database-url'
-
 commandMySql = (input) ->
   { driver, user, password, host, database } = input
   [
@@ -15,15 +14,29 @@ commandMySql = (input) ->
   ].join ' '
 
 commandMongo = (input) ->
-  throw new Error "Mongo is not yet implemented."
+  { driver, user, password, host, database, port } = input
+  host ?= 'localhost'
+
+  if port?
+    host = "#{host}:#{port}"
+  if database?
+    host = "#{host}/#{database}"
+  params = [
+    'mongo',
+    host
+  ]
+
+  if user? and password?
+    params = params.concat [ '-u', user, '-p', password ]
+
+  params.join ' '
 
 CONSTRUCTORS =
   'mysql': commandMySql
-  'mongo': commandMongo
+  'mongodb': commandMongo
 
 constructCommand = (input) ->
-  console.log("DRIVER |#{input.driver}|")
-  # Why do we have to trim?
+  #console.log("DRIVER |#{input.driver}|")
   cstr = CONSTRUCTORS[ input.driver?.trim() ]
   console.log input
   if not cstr?
@@ -31,11 +44,11 @@ constructCommand = (input) ->
   cstr(input)
 
 shspawn = (cmd) ->
-  console.log "shspawn: #{cmd}"
+  #console.log "shspawn: #{cmd}"
   proc = spawn 'sh', ['-c', cmd], { stdio: 'inherit' }
 
 run = (input) ->
-  console.log input
+  #console.log input
   params = parse input
 
   cmd = constructCommand(params)
@@ -46,7 +59,6 @@ process.stdout.write 'URL: '
 process.stdin.setEncoding 'utf8'
 executed = false
 process.stdin.on 'data', (input) ->
-  console.log 'calling run'
   if not executed
     executed = true
     run input
