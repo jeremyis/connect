@@ -6,6 +6,7 @@
     "email": "jeremy.elliot.smith@gmail.com"
   },
   "dependencies": {
-    "minimist": "0.2.x"
+    "minimist": "^0.2.0",
+    "mocha": "^1.21.3"
   }
 }
