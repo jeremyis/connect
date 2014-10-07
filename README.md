@@ -15,6 +15,8 @@ and opens the psql
 
 # Usage:
 ```
+npm install
 chmod u+x connect
 ./connect
 ```
+optional: add to PATH
