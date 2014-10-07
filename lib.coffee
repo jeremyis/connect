@@ -32,9 +32,20 @@ commandMongo = (input) ->
 
   params.join ' '
 
+commandPostgres = (input) ->
+  { driver, user, password, host, database, port } = input
+  [
+    'psql',
+    '-h', host,
+    '-U', user,
+    '-p', port,
+    database
+  ].join ' '
+
 CONSTRUCTORS =
   'mysql': commandMySql
   'mongodb': commandMongo
+  'postgres': commandPostgres
 
 constructCommand = (input) ->
   #console.log("DRIVER |#{input.driver}|")
