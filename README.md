@@ -6,7 +6,7 @@ from URI-formatted addresses.
 
 e.g.
 takes: `postgres://tombrady:forlife@patriots.com:222/foxborough`
-and opens the psql
+and opens psql connected to patriots.com:222/foxborough as user tombrady.
 
 # Support
 * mongo
@@ -19,4 +19,4 @@ npm install
 chmod u+x connect
 ./connect
 ```
-optional: add to PATH
+optionally, add the folder to PATH.
