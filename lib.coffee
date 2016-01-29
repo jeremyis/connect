@@ -14,8 +14,8 @@ commandMySql = (input) ->
     database
   ].join ' '
 
-commandMongo = (input) ->
-  { driver, user, password, host, database, port } = input
+commandMongo = (driver, input) ->
+  { user, password, host, database, port } = input
   host ?= 'localhost'
 
   if port?
@@ -23,7 +23,7 @@ commandMongo = (input) ->
   if database?
     host = "#{host}/#{database}"
   params = [
-    'mongo',
+    driver,
     host
   ]
 
@@ -42,15 +42,18 @@ commandPostgres = (input) ->
     database
   ].join ' '
 
+# TODO: this should get moved to a config
+MONGO3_PATH = '~/dev/mongodb-osx-x86_64-3.2.1/bin/mongo'
+
 CONSTRUCTORS =
   'mysql': commandMySql
-  'mongodb': commandMongo
+  'mongodb': commandMongo.bind null, 'mongo'
   'postgres': commandPostgres
+  'mongo3': commandMongo.bind null, MONGO3_PATH
 
-constructCommand = (input) ->
+constructCommand = (input, driver=null) ->
   #console.log("DRIVER |#{input.driver}|")
-  cstr = CONSTRUCTORS[ input.driver?.trim() ]
-  console.log input
+  cstr = CONSTRUCTORS[ driver ? input.driver?.trim() ]
   if not cstr?
     throw Error "Unknown driver: #{input.driver}"
   cstr(input)
@@ -59,10 +62,10 @@ shspawn = (cmd) ->
   #console.log "shspawn: #{cmd}"
   proc = spawn 'sh', ['-c', cmd], { stdio: 'inherit' }
 
-makeCmd = (input) ->
+makeCmd = (input, driver) ->
   params = parse input
 
-  cmd = constructCommand(params)
+  cmd = constructCommand(params, driver)
 
 getAction = (printMode) ->
   return if printMode then console.log.bind(console) else shspawn

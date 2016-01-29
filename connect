@@ -12,6 +12,6 @@ executed = false
 process.stdin.on 'data', (input) ->
   if not executed
     executed = true
-    cmd = makeCmd(input)
+    cmd = makeCmd(input, args['driver'])
     getAction(args['print']).call(null, cmd)
     process.stdin.end()
